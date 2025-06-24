@@ -13,7 +13,6 @@
 - [Google Gemini (1.5 Flash)](https://ai.google.dev/)
 - [Streamlit](https://streamlit.io/)
 - [GitHub REST API](https://docs.github.com/en/rest)
-- [Python-dotenv](https://pypi.org/project/python-dotenv/)
 
 ---
 ### Contributing
