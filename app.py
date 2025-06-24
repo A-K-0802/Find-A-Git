@@ -1,4 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_huggingface import ChatHuggingFace,HuggingFaceEndpoint
 from langchain_core.messages import HumanMessage
 from langchain.prompts import PromptTemplate
 import requests
@@ -13,7 +14,7 @@ import json
 load_dotenv()
 
 client = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",)
+    model="gemini-1.5-flash",)
 
 # prompt_template= PromptTemplate(
 #     template="""You are a helpful AI assistant.
@@ -27,8 +28,8 @@ client = ChatGoogleGenerativeAI(
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 @tool
-def get_git_repo(topic:str, language:str, max_count:int=5):
-    """This function fetches information about top 5 GitHub repositories based on the topic and language provided by the user.
+def get_git_repo(topic:str, language:str = None, max_count:int=5):
+    """This function fetches information about top 5 GitHub repositories based on the topic and language(Optional) provided by the user.
     It returns a list of repositories that match the criteria."""
     headers={
         "Authorization": f"Bearer {GITHUB_TOKEN}",
@@ -36,7 +37,7 @@ def get_git_repo(topic:str, language:str, max_count:int=5):
     }
 
     params={
-        "q": f"{topic} language:{language}",
+        "q": f"{topic} language:{language}" if language else topic,
         "sort": "stars",
         "order": "desc",
         "per_page": max_count
@@ -61,7 +62,7 @@ def get_git_repo(topic:str, language:str, max_count:int=5):
 
 agent= client.bind_tools([get_git_repo])
 st.header("GitHub Repository Finder")
-st.write("This app helps you find open source projects on GitHub based on your interests and programming language preferences.")
+st.write("This app helps you find top open source repos on GitHub based on your interests and programming language preferences(If you dont have a preffered language, specify that please).")
 user_input = st.text_input("Enter your query here.(Please specify the topic and language you are interested in, e.g., 'pathfinding using Java')",)
 messages=[HumanMessage(user_input)]
 
@@ -76,4 +77,4 @@ result=agent.invoke(messages)
 if st.button("Show Result"):
     st.write("Here are the top repositories based on your query:")
     st.write(result.content)
-print(result.content)
+print(result)
