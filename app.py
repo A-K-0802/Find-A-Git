@@ -60,8 +60,10 @@ def get_git_repo(topic:str, language:str, max_count:int=5):
 # print(get_git_repo.invoke({"topic": "pathfinding", "language": "python"}))
 
 agent= client.bind_tools([get_git_repo])
-
-messages=[HumanMessage("I want to contribute to a project on pathfinding using Python. Can you help me find a open source project after looking at existing repos?")]
+st.header("GitHub Repository Finder")
+st.write("This app helps you find open source projects on GitHub based on your interests and programming language preferences.")
+user_input = st.text_input("Enter your query here.(Please specify the topic and language you are interested in, e.g., 'pathfinding using Java')",)
+messages=[HumanMessage(user_input)]
 
 response=agent.invoke(messages)
 messages.append(response)
@@ -71,4 +73,7 @@ for tool_call in response.tool_calls:
     messages.append(tool_response)
 
 result=agent.invoke(messages)
+if st.button("Show Result"):
+    st.write("Here are the top repositories based on your query:")
+    st.write(result.content)
 print(result.content)
